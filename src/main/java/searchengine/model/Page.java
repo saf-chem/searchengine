@@ -1,6 +1,8 @@
 package searchengine.model;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -15,8 +17,9 @@ public class Page {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "site_id", nullable = false, columnDefinition = "INT")
-    private int siteId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "site_id", nullable = false)
+    private Site site;
 
     @Column(name = "path", nullable = false, columnDefinition = "TEXT")
     private String path;
@@ -27,8 +30,7 @@ public class Page {
     @Column(name = "content", nullable = false, columnDefinition = "MEDIUMTEXT")
     private String content;
 
-    public Page(int siteId, String path, int code, String content){
-        this.siteId = siteId;
+    public Page(String path, int code, String content){
         this.path = path;
         this.code = code;
         this.content = content;
