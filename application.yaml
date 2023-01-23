@@ -15,9 +15,14 @@ spring:
 
 indexing-settings:
   sites:
-    - url: https://www.lenta.ru
-      name: Лента.ру
-    - url: https://www.skillbox.ru
-      name: Skillbox
+    - url: https://dombulgakova.ru/
+      name: DomBulgakova.ру
     - url: https://www.playback.ru
       name: PlayBack.Ru
+
+parsing-settings:
+  user-agent: SearchBot
+  referer: https://yandex.ru
+  contentType: text/html; charset=utf-8
+  timeout: 15_000 # ms
+  thread-delay: 150 # ms

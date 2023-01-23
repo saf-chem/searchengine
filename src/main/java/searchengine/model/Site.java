@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -19,7 +20,7 @@ public class Site {
     private StatusType status;
 
     @Column(name = "status_time", nullable = false, columnDefinition = "DATETIME")
-    private long statusTime;
+    private LocalDateTime statusTime;
 
     @Column(name = "last_error_txt", columnDefinition = "TEXT")
     private String lastErrorTxt;
@@ -29,14 +30,5 @@ public class Site {
 
     @Column(name = "site_name", nullable = false, columnDefinition = "VARCHAR(255)")
     private String siteName;
-
-    public Site (StatusType status, long statusTime, String lastErrorTxt, String siteUrl, String siteName){
-        this.status = status;
-        this.statusTime = statusTime;
-        this.lastErrorTxt = lastErrorTxt;
-        this.siteUrl = siteUrl;
-        this.siteName = siteName;
-    }
-
 
 }

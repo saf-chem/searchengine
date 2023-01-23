@@ -8,33 +8,26 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "page", indexes = {
-        @Index(name = "index_path", columnList = "path", unique = true)
-})
+@Table(name = "page")
 
 public class Page {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "site_id", nullable = false)
     private Site site;
 
-    @Column(name = "path", nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT NOT NULL, UNIQUE KEY uk_site_path(site_id,path(500))")
     private String path;
 
-    @Column(name = "code", nullable = false, columnDefinition = "INT")
-    private int code;
+    @Column(nullable = false)
+    private Integer code;
 
-    @Column(name = "content", nullable = false, columnDefinition = "MEDIUMTEXT")
+    @Column(columnDefinition = "MEDIUMTEXT", nullable = false)
     private String content;
 
-    public Page(String path, int code, String content){
-        this.path = path;
-        this.code = code;
-        this.content = content;
-    }
 
 
 
