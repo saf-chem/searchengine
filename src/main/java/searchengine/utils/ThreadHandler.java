@@ -1,41 +1,52 @@
 package searchengine.utils;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import searchengine.config.ParserConf;
 import searchengine.model.Site;
-import searchengine.model.StatusType;
+import searchengine.model.Status;
 import searchengine.services.FactoryService;
+import searchengine.services.StartIndexingService;
+import searchengine.services.NetworkService;
+import searchengine.services.SiteService;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 @Slf4j
 public class ThreadHandler implements Runnable{
-    private static ParserConf parserConf;
-    private static FactoryService factoryService;
     private static ForkJoinPool forkJoinPool;
+    private ParserConf parserConf;
+    private NetworkService networkService;
+    private SiteService siteService;
+    private StartIndexingService indexingService;
     private Site site;
+    private String startUrl;
 
-    public ThreadHandler(ParserConf parserConf, FactoryService factoryService, Site site) {
-        ThreadHandler.parserConf = parserConf;
-        ThreadHandler.factoryService = factoryService;
+    public ThreadHandler(ParserConf parserConf, NetworkService networkService,
+                         SiteService siteService, StartIndexingService indexingService,
+                         Site site, String startUrl) {
+        this.parserConf = parserConf;
+        this.indexingService = indexingService;
+        this.networkService = networkService;
+        this.siteService = siteService;
         this.site = site;
+        this.startUrl = startUrl;
         if (forkJoinPool == null) {
             forkJoinPool = new ForkJoinPool(parserConf.getParallelism());
         }
     }
-    @Override
-    public void run(){
-        try {
-            Long start = System.currentTimeMillis();
-            LemmaFinder lemmaFinder = LemmaFinder.getInstance();
-            Parser parser = new Parser(site, site.getSiteUrl() + "/", factoryService, lemmaFinder, parserConf);
-            if (forkJoinPool.invoke(parser)) {
-                factoryService.getLemmaService().mergeFrequency(parser.getLemmaFrequency());
 
-                factoryService.getSiteService().updateSiteStatus(site, StatusType.INDEXED, "");
-                log.info(site.getSiteUrl() + " - " + String.valueOf(System.currentTimeMillis() - start));
+    @Override
+    public void run() {
+        try {
+            Parser parser = new Parser(site, startUrl, networkService, indexingService, parserConf);
+            if (forkJoinPool.invoke(parser)) {
+                siteService.updateSiteStatus(site, Status.INDEXED, "");
             } else {
-                factoryService.getSiteService().updateSiteStatus(site, StatusType.FAILED, "Индексация остановлена пользователем");
+                siteService.updateSiteStatus(site, Status.FAILED, "Индексация остановлена пользователем");
             }
         } catch (Exception e) {
             log.info("Старт индексации ошибка " + e.getMessage());

@@ -1,34 +1,33 @@
 package searchengine.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
-@Table(name = "site")
+@Table(name = "sites")
 public class Site {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "ENUM('INDEXING', 'INDEXED', 'FAILED')", nullable = false)
-    private StatusType status;
+    Status status;
 
-    @Column(name = "status_time", nullable = false, columnDefinition = "DATETIME")
-    private LocalDateTime statusTime;
+    @Column(name = "status_time", nullable = false)
+    LocalDateTime statusTime;
 
-    @Column(name = "last_error_txt", columnDefinition = "TEXT")
-    private String lastErrorTxt;
+    @Column(name = "last_error", columnDefinition = "TEXT")
+    String lastError;
 
-    @Column(name = "site_url", nullable = false, columnDefinition = "VARCHAR(255)")
-    private String siteUrl;
+    @Column(columnDefinition = "VARCHAR(255)", nullable = false)
+    String url;
 
-    @Column(name = "site_name", nullable = false, columnDefinition = "VARCHAR(255)")
-    private String siteName;
+    @Column(columnDefinition = "VARCHAR(255)", nullable = false)
+    String name;
 
 }

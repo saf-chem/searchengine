@@ -1,5 +1,6 @@
 package searchengine.services;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
@@ -14,6 +15,7 @@ import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class NetworkServiceImpl implements NetworkService{
+
     private final ParserConf parserConf;
 
     @Override
@@ -37,5 +39,12 @@ public class NetworkServiceImpl implements NetworkService{
         Connection.Response response = getResponse(url);
         return response == null ?
                 false : response.statusCode() == HttpStatus.OK.value();
+    }
+
+    @Override
+    public boolean isAvailableContent(Connection.Response response) {
+        return ((response != null)
+                && (response.statusCode() == HttpStatus.OK.value())
+                && (response.contentType().equalsIgnoreCase(parserConf.getContentType())));
     }
 }

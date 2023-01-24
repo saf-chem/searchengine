@@ -1,13 +1,13 @@
 package searchengine.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.morphology.LuceneMorphology;
+import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
 import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class LemmaFinder {
@@ -27,6 +27,7 @@ public class LemmaFinder {
     private String htmlToText(String html) {
         return Jsoup.clean(html, Whitelist.none());
     }
+
 
     public Map<String, Integer> collectLemmas(String html) {
         String[] words = arrayContainsRussianWords(html);
@@ -48,7 +49,6 @@ public class LemmaFinder {
             }
 
             String normalWord = normalForms.get(0);
-
             if (lemmas.containsKey(normalWord)) {
                 lemmas.put(normalWord, lemmas.get(normalWord) + 1);
             } else {
@@ -68,6 +68,8 @@ public class LemmaFinder {
                 if (anyWordBaseBelongToParticle(wordBaseForms)) {
                     continue;
                 }
+
+
                 lemmaSet.addAll(luceneMorphology.getNormalForms(word));
             }
         }

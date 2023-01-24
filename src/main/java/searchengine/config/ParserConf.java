@@ -15,7 +15,7 @@ public class ParserConf {
     private String referer;
     private String contentType;
     private int timeout;
-    private int lemmasTreshhold;
+    private int Treshhold;
     private int parallelism;
     private int threadDelay;
 

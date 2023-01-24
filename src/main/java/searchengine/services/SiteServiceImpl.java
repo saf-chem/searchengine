@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import searchengine.config.SiteConf;
 import searchengine.config.SitesList;
 import searchengine.model.Site;
-import searchengine.model.StatusType;
+import searchengine.model.Status;
 import searchengine.repository.SiteRepository;
 
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SiteServiceImpl implements SiteService{
+public class SiteServiceImpl implements SiteService {
 
     private final SiteRepository siteRepository;
     private final NetworkService networkService;
@@ -40,23 +40,21 @@ public class SiteServiceImpl implements SiteService{
         boolean isAvailable = networkService
                 .checkSiteConnection(siteConf.getUrl());
         String lastError = isAvailable ? "" : "Сайт не доступен";
-        StatusType status = isAvailable ? StatusType.INDEXING : StatusType.FAILED;
-
+        Status status = isAvailable ? Status.INDEXING : Status.FAILED;
         site = new Site();
-        site.setSiteUrl(siteConf.getUrl());
-        site.setSiteName(siteConf.getName());
-
+        site.setUrl(siteConf.getUrl());
+        site.setName(siteConf.getName());
         site.setStatus(status);
         site.setStatusTime(LocalDateTime.now());
-        site.setLastErrorTxt(lastError);
+        site.setLastError(lastError);
         return site;
     }
 
     @Override
     public List<Site> getSitesToParsing(SitesList sites) {
         List<Site> sitesToParsing = new ArrayList<>();
-        for (SiteConf siteCfg : sites.getSites()) {
-            Site site = createSite(siteCfg);
+        for (SiteConf siteConf : sites.getSites()) {
+            Site site = createSite(siteConf);
             sitesToParsing.add(site);
         }
         return sitesToParsing;
@@ -79,19 +77,20 @@ public class SiteServiceImpl implements SiteService{
 
     @Override
     public boolean isIndexing() {
-        return siteRepository.findAnyStatus(StatusType.INDEXING) != null;
+        return siteRepository.findAnyStatus(Status.INDEXING) != null;
     }
 
     @Override
     public void dropIndexingStatus() {
-        siteRepository.updateStatus(StatusType.INDEXING, StatusType.FAILED);
+        siteRepository.updateStatus(Status.INDEXING, Status.FAILED);
     }
 
     @Override
-    public void updateSiteStatus(Site site, StatusType status, String lastError) {
+    public void updateSiteStatus(Site site, Status status, String lastError) {
         site.setStatus(status);
-        site.setLastErrorTxt(lastError);
+        site.setLastError(lastError);
         site.setStatusTime(LocalDateTime.now());
         save(site);
     }
+
 }
