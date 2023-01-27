@@ -13,7 +13,6 @@ public class Site {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NonNull
     private int Id;
 
     @Enumerated(EnumType.STRING)
